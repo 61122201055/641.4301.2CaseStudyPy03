@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+# Copyright 2010-2021 Google LLC
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Minimal example to call the GLOP solver."""
+# [START program]
+# [START import]
+from ortools.linear_solver import pywraplp
+# [END import]
+
+
+# [START solver]
+# Create the linear solver with the GLOP backend.
+solver = pywraplp.Solver.CreateSolver('GLOP')
+# [END solver]
+
+# [START variables]
+infinity = solver.infinity()
+# Create the variables x and y.
+x1 = solver.NumVar(0.0, infinity, 'x1')
+x2 = solver.NumVar(0.0, infinity, 'x2')
+x3 = solver.NumVar(0.0, infinity, 'x3')
+x4 = solver.NumVar(0.0, infinity, 'x4')
+print('Number of variables =', solver.NumVariables())
+# [END variables]
+
+# [START constraints]
+# x + 7 * y <= 17.5.
+solver.Add(0.125*x1+ 0.066*x4 <= 1200)
+solver.Add(0.08*x2 + 0.05*x3 <= 3000)
+solver.Add(0.05*x3 + 0.044*x4 <= 1600)
+solver.Add(x1 >= 5000)
+solver.Add(x1 <= 7000 )
+solver.Add(x2 >= 10000)
+solver.Add(x2 <= 14000)
+solver.Add(x3 >= 13000)
+solver.Add(x3 <= 16000)
+solver.Add(x4 >= 5000)
+solver.Add(x4 <= 8500)
+solver.Add(x1 >=0)
+solver.Add(x2 >=0)
+solver.Add(x3 >=0)
+solver.Add(x4 >=0)
+
+print('Number of constraints =', solver.NumConstraints())
+# [END constraints]
+
+# [START objective]
+# Maximize x + 10 * y.
+solver.Maximize(16.24*x1 + 8.22*x2 + 8.77*x3 +8.66*x4)
+# [END objective]
+
+# [START solve]
+status = solver.Solve()
+# [END solve]
+
+# [START print_solution]
+if status == pywraplp.Solver.OPTIMAL:
+    print('Solution:')
+    print('Objective value =', solver.Objective().Value())
+    print('x1 =', x1.solution_value())
+    print('x2 =', x2.solution_value())
+    print('x3 =', x3.solution_value())
+    print('x4 =', x4.solution_value())
+else:
+    print('The problem does not have an optimal solution.')
+# [END print_solution]
+
+# [START advanced]
+print('\nAdvanced usage:')
+print('Problem solved in %f milliseconds' % solver.wall_time())
+print('Problem solved in %d iterations' % solver.iterations())
+# [END advanced]
+
